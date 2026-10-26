@@ -38,6 +38,12 @@ agentwaste = "agentwaste.cli:main"
 [project.optional-dependencies]
 dev = ["pytest>=7.0"]
 
+[tool.hatch.build.targets.sdist]
+# Anchored with "/": unanchored patterns also match legacy/agentsight/src.
+# Docs pages and sidebar are kept because tests/test_docs.py reads them.
+include = ["/src", "/tests", "/README.md", "/LICENSE", "/CHANGELOG.md", "/pyproject.toml",
+           "/docs/sidebar.json", "/docs/src/content"]
+
 [tool.hatch.build.targets.wheel]
 packages = ["src/agentwaste"]
 
