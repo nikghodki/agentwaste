@@ -1,6 +1,8 @@
 # Changelog
 
-## 0.1.0 (unreleased)
+## 0.1.0 (2026-10-26)
+
+On PyPI: `uvx agentwaste`.
 
 First release of agentwaste, pivoted from the AgentSight SDK (now in
 `legacy/agentsight`).
