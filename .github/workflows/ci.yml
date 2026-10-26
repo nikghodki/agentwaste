@@ -2,7 +2,6 @@ name: CI
 
 on:
   push:
-    branches: [main]
   pull_request:
 
 permissions:
@@ -36,5 +35,12 @@ jobs:
           cache-dependency-path: docs/package-lock.json
       - run: npm ci
         working-directory: docs
-      - run: npm run build
+      - name: Build docs
         working-directory: docs
+        run: |
+          set -o pipefail
+          npm run build 2>&1 | tee build.log || {
+            # Logs need repo admin rights to read; annotations are public.
+            echo "::error title=docs build failed::$(grep -iE 'error|cannot|failed' build.log | tail -c 1500 | tr '\n' ' ')"
+            exit 1
+          }
