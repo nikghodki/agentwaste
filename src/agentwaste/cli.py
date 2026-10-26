@@ -15,6 +15,23 @@ from .report import render_text, to_json
 from .sources import claude_code
 
 
+CARD_FILE = "agentwaste-card.html"
+
+
+def invocation(argv0: str) -> str:
+    """The command the user should type to run agentwaste again. `uvx` and
+    `pipx run` start it from a cache without installing anything, so a bare
+    `agentwaste` would be "command not found" -- users hit exactly that."""
+    path = argv0.replace("\\", "/")
+    if "/.cache/uv/" in path or "/uv/cache/" in path or "/archive-v0/" in path:
+        return "uvx agentwaste"
+    if "/pipx/.cache/" in path:
+        return "pipx run agentwaste"
+    if path.endswith("__main__.py"):
+        return "python -m agentwaste"
+    return "agentwaste"
+
+
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="agentwaste",
                                 description="Find where your AI coding agent wastes tokens, and how to stop it.")
@@ -48,6 +65,9 @@ def main(argv: list[str] | None = None) -> int:
         Path(args.card).write_text(render_card(report))
         if not args.json:
             print(f"\nShareable card written to {args.card}")
+    elif not args.json:
+        demo = " --demo" if args.demo else ""
+        print(f"\nShare your grade: {invocation(sys.argv[0])}{demo} --card {CARD_FILE}")
     return 0
 
 
