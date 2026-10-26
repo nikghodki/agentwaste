@@ -1,0 +1,53 @@
+---
+title: "agentwaste"
+description: "Find where your AI coding agent wastes tokens, and how to stop it."
+template: splash
+hero:
+  tagline: "Your coding agent quietly burns tokens on re-caching, re-reading and retry loops. agentwaste reads the logs it already keeps, shows you exactly where the waste is, and how to stop it."
+  actions:
+    - text: "Get started"
+      link: /agentwaste/quickstart/
+      icon: right-arrow
+    - text: "View on GitHub"
+      link: https://github.com/nikghodki/agentwaste
+      icon: github
+      variant: minimal
+---
+
+import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
+
+```bash
+uvx --from git+https://github.com/nikghodki/agentwaste agentwaste
+```
+
+## Usage trackers tell you how much. agentwaste tells you why.
+
+<CardGrid>
+  <Card title="Finds the waste" icon="magnifier">
+    Six detectors for the patterns that burn tokens for nothing: idle cache rebuilds,
+    uncached context, re-reads, duplicate lookups, huge outputs and retry loops.
+  </Card>
+  <Card title="Tells you the fix" icon="approve-check">
+    Every finding comes with its cost, the worst offenders (files, tools, models) and
+    a specific change to make.
+  </Card>
+  <Card title="Private by design" icon="seti:lock">
+    Runs locally and read-only. No network requests, no account, no setup.
+  </Card>
+  <Card title="Shareable card" icon="star">
+    A one-file summary of your grade and top waste, with nothing private in it.
+  </Card>
+</CardGrid>
+
+## What it finds
+
+On the author's own month of Claude Code use, **about a third of all input cost was
+re-caching context after stepping away for more than five minutes.** Most people have
+no idea it's happening.
+
+<CardGrid>
+  <LinkCard title="Quickstart" description="Your first report in under a minute." href="/agentwaste/quickstart/" />
+  <LinkCard title="How it works" description="The cost model behind every number." href="/agentwaste/how-it-works/" />
+  <LinkCard title="Detectors" description="The six waste patterns, defined exactly." href="/agentwaste/detectors/overview/" />
+  <LinkCard title="Reducing waste" description="The habits that make the biggest difference." href="/agentwaste/guides/reducing-waste/" />
+</CardGrid>
