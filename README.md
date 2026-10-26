@@ -4,6 +4,7 @@
 
 **Your AI coding agent is wasting tokens. Find out where, and how to stop it.**
 
+[![PyPI](https://img.shields.io/pypi/v/agentwaste)](https://pypi.org/project/agentwaste/)
 [![CI](https://github.com/nikghodki/agentwaste/actions/workflows/ci.yml/badge.svg)](https://github.com/nikghodki/agentwaste/actions/workflows/ci.yml)
 [![Docs](https://img.shields.io/badge/docs-nikghodki.github.io%2Fagentwaste-ff7a59)](https://nikghodki.github.io/agentwaste/)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/)
@@ -21,7 +22,7 @@
 ## Try it in 10 seconds
 
 ```bash
-uvx --from git+https://github.com/nikghodki/agentwaste agentwaste
+uvx agentwaste
 ```
 
 That's it: no install, no account, no config. It reads the Claude Code logs
@@ -30,11 +31,8 @@ already on your machine and prints a report. No history yet? Add `--demo`.
 Want the `agentwaste` command permanently? Install it once:
 
 ```bash
-uv tool install git+https://github.com/nikghodki/agentwaste      # or: pipx install git+https://github.com/nikghodki/agentwaste
+uv tool install agentwaste    # or: pipx install agentwaste, or: pip install agentwaste
 ```
-
-The examples below use the installed command. Without installing, put
-`uvx --from git+https://github.com/nikghodki/agentwaste` in front of them.
 
 ## Why
 
@@ -101,7 +99,7 @@ Full reference: [CLI](https://nikghodki.github.io/agentwaste/reference/cli/) ·
 
 - [x] Claude Code support, six detectors, report, JSON, shareable card
 - [ ] Codex support
-- [ ] `pip install agentwaste` / `uvx agentwaste` from PyPI
+- [x] On PyPI: `uvx agentwaste`, `pipx install agentwaste`, `pip install agentwaste`
 - [ ] Live warnings while you work ("your cache expires in 1 minute")
 - [ ] Before/after comparison: did the fix actually help?
 
