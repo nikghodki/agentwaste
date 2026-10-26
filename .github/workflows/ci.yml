@@ -41,6 +41,7 @@ jobs:
           set -o pipefail
           npm run build 2>&1 | tee build.log || {
             # Logs need repo admin rights to read; annotations are public.
-            echo "::error title=docs build failed::$(grep -iE 'error|cannot|failed' build.log | tail -c 1500 | tr '\n' ' ')"
+            msg=$(tail -c 1500 build.log | sed 's/%/%25/g' | sed ':a;N;$!ba;s/\n/%0A/g')
+            echo "::error title=docs build failed::${msg:-no output}"
             exit 1
           }
