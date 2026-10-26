@@ -27,6 +27,15 @@ uvx --from git+https://github.com/nikghodki/agentwaste agentwaste
 That's it: no install, no account, no config. It reads the Claude Code logs
 already on your machine and prints a report. No history yet? Add `--demo`.
 
+Want the `agentwaste` command permanently? Install it once:
+
+```bash
+uv tool install git+https://github.com/nikghodki/agentwaste      # or: pipx install git+https://github.com/nikghodki/agentwaste
+```
+
+The examples below use the installed command. Without installing, put
+`uvx --from git+https://github.com/nikghodki/agentwaste` in front of them.
+
 ## Why
 
 Usage trackers tell you **how much** you used. agentwaste tells you **why**,

@@ -4,6 +4,7 @@ file names; the shareable card (card.py) never does."""
 from __future__ import annotations
 
 import json
+import os
 import textwrap
 from datetime import datetime
 
@@ -19,6 +20,11 @@ def human(n: float) -> str:
 
 def _date(ts: float | None) -> str:
     return datetime.fromtimestamp(ts).strftime("%Y-%m-%d") if ts else "?"
+
+
+def _short(label: str) -> str:
+    home = os.environ.get("HOME", "")
+    return "~" + label[len(home):] if home and label.startswith(home + "/") else label
 
 
 def _usd(eq: float, usd_per_mtok: float | None) -> str:
@@ -49,7 +55,7 @@ def render_text(r: Report, usd_per_mtok: float | None = None, top: int = 3) -> s
             pct = 100 * f.waste / r.priced_input if r.priced_input else 0
             lines.append(f"{pct:5.1f}%  {f.title}  ({f.count:,}x, {human(f.waste)} eq{_usd(f.waste, usd_per_mtok)})")
         for label, n in f.examples[:top]:
-            lines.append(f"        - {label}: {n:,}x")
+            lines.append(f"        - {_short(label)}: {n:,}x")
         lines += ["        " + l for l in textwrap.wrap("Fix: " + f.fix, 88)]
         lines.append("")
     if not any(f.count for f in r.findings):

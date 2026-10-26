@@ -31,6 +31,10 @@ import { Aside, Steps, Tabs, TabItem } from '@astrojs/starlight/components';
     By default it reads the last 30 days of Claude Code sessions from `~/.claude/projects`.
     No Claude Code history yet? Add `--demo` to see a report on synthetic sessions.
 
+    `uvx` runs agentwaste without installing it. To get a permanent `agentwaste` command,
+    install it once with `uv tool install git+https://github.com/nikghodki/agentwaste` or `pipx install git+https://github.com/nikghodki/agentwaste`. The examples
+    below use the installed command; without installing, put `uvx --from git+https://github.com/nikghodki/agentwaste` in front.
+
 2. **Read the report.** This is the `--demo` output:
 
     ```text

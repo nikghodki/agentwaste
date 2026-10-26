@@ -98,3 +98,15 @@ def test_informational_findings_do_not_affect_waste_or_grade(transcript):
     assert r.waste == 0 and r.grade == "A"
     text = render_text(r)
     assert "Not counted in the grade" in text and "qwen3.8-27b" in text
+
+
+def test_paths_under_home_are_shortened_to_tilde(monkeypatch):
+    from agentwaste.detectors import Finding
+    from agentwaste.analysis import Report
+    monkeypatch.setenv("HOME", "/Users/someone")
+    r = Report(priced_input=1000, model_calls=1, findings=[
+        Finding("reread", "Re-reading unchanged files", "fix", count=2, waste=10,
+                examples=[("/Users/someone/code/app/main.py", 2), ("/etc/hosts", 1)])])
+    text = render_text(r)
+    assert "~/code/app/main.py: 2x" in text and "/Users/someone" not in text
+    assert "/etc/hosts: 1x" in text
