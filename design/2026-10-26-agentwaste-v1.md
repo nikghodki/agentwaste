@@ -41,6 +41,19 @@ with their own cache, so their timing and repeats are judged separately.
    stream. Waste = the priced input of the model calls that issued the 3rd and
    later failing attempts.
 
+6. **uncached_context**: a call after the first in its stream with >= 20,000
+   fresh (uncached) input tokens: the conversation is being re-sent instead of
+   read from a cache. Waste = fresh tokens x (1 - 0.1). Found on real logs where
+   Claude Code ran against a self-hosted model (~63k fresh tokens per call).
+   Split by model: on Claude models it counts as waste (a proxy dropping
+   cache_control is the usual cause). On other models, typically self-hosted,
+   it is reported as **informational** (`counted = false`): the cost is GPU
+   prefill time and latency, not Claude-priced tokens, so it is excluded from
+   the waste total and grade, and the fix quotes the measured cache-hit rate.
+
+Claude Code `<synthetic>` placeholder messages (errors, interrupts; zero
+usage) are ignored.
+
 Result tokens are estimated as characters / 4.
 
 ## Output

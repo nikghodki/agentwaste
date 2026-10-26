@@ -25,7 +25,7 @@ background:#0f1115;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Robot
 
 def render_card(r: Report) -> str:
     rows = []
-    for f in r.findings[:3]:
+    for f in [f for f in r.findings if f.counted][:3]:
         if not f.count or not r.priced_input:
             continue
         pct = 100 * f.waste / r.priced_input

@@ -116,3 +116,43 @@ def test_a_success_breaks_the_run():
     seq = [True, True, False, True, True]
     calls = [call(i, inp=10, tools=[tool("Bash", {"command": "x"}, err=e, tid=f"b{i}")]) for i, e in enumerate(seq)]
     assert detect_error_thrash([stream(*calls)]).count == 0
+
+
+# --- uncached context ---------------------------------------------------------
+
+from agentwaste.detectors import detect_uncached_context, detect_uncached_context_self_hosted  # noqa: E402
+
+
+def test_large_fresh_input_after_the_first_call_is_uncached_context():
+    s = stream(call(0, inp=60000), call(5, inp=62000), call(9, inp=64000))
+    for c in s.calls:
+        c.model = "claude-opus-x"  # non-Claude models go to the informational detector
+    f = detect_uncached_context([s])
+    assert f.count == 2  # the first call has nothing to reuse yet
+    assert f.waste == pytest.approx((62000 + 64000) * (1 - W_CACHE_READ))
+
+
+def test_cached_conversations_and_small_inputs_are_fine():
+    s = stream(call(0, cw=60000), call(5, cr=60000, inp=300), call(9, inp=5000))
+    assert detect_uncached_context([s]).count == 0
+
+
+def _stream_with(model, **kw):
+    s = stream(call(0, **kw), call(5, **kw))
+    for c in s.calls:
+        c.model = model
+    return s
+
+
+def test_uncached_claude_context_counts_as_waste_with_a_proxy_fix():
+    f = detect_uncached_context([_stream_with("claude-sonnet-x", inp=60000)])
+    assert f.count == 1 and f.counted
+    assert "cache_control" in f.fix
+
+
+def test_self_hosted_models_are_reported_separately_and_not_counted():
+    s = _stream_with("qwen3.8-27b", inp=60000, cr=20000)
+    assert detect_uncached_context([s]).count == 0
+    f = detect_uncached_context_self_hosted([s])
+    assert f.count == 1 and not f.counted
+    assert "prefix" in f.fix and "25%" in f.fix  # cache hit rate 20k / 80k, measured

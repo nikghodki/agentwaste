@@ -14,6 +14,7 @@ MIN_REBUILD = 20_000
 HUGE_TOKENS = 10_000
 HUGE_KEEP = 2_000  # a result this size is reasonable; only the excess counts
 THRASH_RUN = 3
+UNCACHED_MIN = 20_000
 
 EDIT_TOOLS = {"Edit", "Write", "MultiEdit", "NotebookEdit"}
 MUTATING_TOOLS = EDIT_TOOLS | {"Bash"}
@@ -28,6 +29,9 @@ class Finding:
     count: int = 0
     waste: float = 0.0  # eq
     examples: list[tuple[str, int]] = field(default_factory=list)  # (label, occurrences)
+    # False for findings whose cost isn't priced like Claude's (self-hosted
+    # models): shown, but excluded from the waste total and the grade.
+    counted: bool = True
 
 
 def _top(counter: Counter, n: int = 3) -> list[tuple[str, int]]:
@@ -146,5 +150,54 @@ def detect_error_thrash(streams: list[Stream]) -> Finding:
     return f
 
 
+def _is_claude(model: str) -> bool:
+    return model.startswith("claude")
+
+
+def _uncached_calls(streams: list[Stream], claude: bool):
+    for s in streams:
+        for c in s.calls[1:]:
+            if c.input >= UNCACHED_MIN and _is_claude(c.model) == claude:
+                yield c
+
+
+def detect_uncached_context(streams: list[Stream]) -> Finding:
+    """Large fresh (uncached) input on a Claude call that follows earlier calls
+    in the same stream: the conversation is re-sent at full price instead of
+    read from the prompt cache -- typically a proxy dropping cache markers."""
+    f = Finding("uncached_context", "Context re-sent without prompt caching",
+                "Each turn re-sent the whole conversation uncached, at ~10x the cached price. If you use a "
+                "proxy or gateway (LiteLLM, Bedrock, a custom base URL), make sure it passes the "
+                "prompt-caching cache_control markers through and that caching is enabled for the model.")
+    models = Counter()
+    for c in _uncached_calls(streams, claude=True):
+        f.count += 1
+        f.waste += c.input * (1 - W_CACHE_READ)
+        models[c.model] += 1
+    f.examples = _top(models)
+    return f
+
+
+def detect_uncached_context_self_hosted(streams: list[Stream]) -> Finding:
+    """The same pattern on non-Claude (typically self-hosted) models. Their cost
+    is GPU prefill time and latency, not Claude-priced tokens, so it is
+    reported but not counted toward waste or the grade."""
+    f = Finding("uncached_context_self_hosted", "Self-hosted model re-processing context", "", counted=False)
+    models = Counter()
+    for c in _uncached_calls(streams, claude=False):
+        f.count += 1
+        f.waste += c.input * (1 - W_CACHE_READ)
+        models[c.model or "unknown model"] += 1
+    f.examples = _top(models)
+    fresh = sum(c.input for s in streams for c in s.calls if not _is_claude(c.model))
+    read = sum(c.cache_read for s in streams for c in s.calls if not _is_claude(c.model))
+    hit = 100 * read / (fresh + read) if fresh + read else 0
+    f.fix = (f"Only {hit:.0f}% of this model's input was served from its prefix cache; the rest was "
+             "re-processed every turn, costing GPU prefill time and latency. Check the server's prefix "
+             "caching is on (default in recent vLLM; SGLang uses RadixAttention), that it has free KV-cache "
+             "memory, and that a session's requests reach the same replica.")
+    return f
+
 ALL_DETECTORS = [detect_idle_rebuilds, detect_rereads, detect_duplicate_calls,
-                 detect_huge_results, detect_error_thrash]
+                 detect_huge_results, detect_error_thrash, detect_uncached_context,
+                 detect_uncached_context_self_hosted]

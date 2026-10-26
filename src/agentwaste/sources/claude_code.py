@@ -71,7 +71,9 @@ def parse_file(path: Path) -> list[Stream]:
             if rec.get("type") == "assistant":
                 mid = msg.get("id") or rec.get("uuid")
                 ts = _ts(rec.get("timestamp"))
-                if not mid or ts is None:
+                # Claude Code writes "<synthetic>" placeholders (errors, interrupts)
+                # with zero usage; they are not model calls.
+                if not mid or ts is None or msg.get("model") == "<synthetic>":
                     continue
                 call = calls.get((sid, side, mid))
                 if call is None:

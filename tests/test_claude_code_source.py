@@ -64,3 +64,11 @@ def test_project_name_comes_from_the_working_directory(transcript):
     t = transcript()
     t.assistant(T(0), "m1").write()
     assert load(t.path.parent.parent)[0].project == "project"
+
+
+def test_synthetic_placeholder_messages_are_ignored(transcript):
+    t = transcript()
+    t.assistant(T(0), "m1", input=5, model="<synthetic>").assistant(T(1), "m2", input=7)
+    t.write()
+    [stream] = load(t.path.parent.parent)
+    assert [c.id for c in stream.calls] == ["m2"]

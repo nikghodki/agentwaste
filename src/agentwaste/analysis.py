@@ -39,7 +39,7 @@ class Report:
     def waste(self) -> float:
         # Detectors can overlap (a huge result that is also a re-read), so cap
         # the total at what was actually spent.
-        return min(sum(f.waste for f in self.findings), self.priced_input)
+        return min(sum(f.waste for f in self.findings if f.counted), self.priced_input)
 
     @property
     def waste_pct(self) -> float:
@@ -64,5 +64,5 @@ def analyze(source: list[Stream] | Path | str, since: float | None = None) -> Re
             r.priced_input += priced_input(c)
             r.first_ts = c.ts if r.first_ts is None else min(r.first_ts, c.ts)
             r.last_ts = c.ts if r.last_ts is None else max(r.last_ts, c.ts)
-    r.findings = sorted((d(streams) for d in ALL_DETECTORS), key=lambda f: f.waste, reverse=True)
+    r.findings = sorted((d(streams) for d in ALL_DETECTORS), key=lambda f: (f.counted, f.waste), reverse=True)
     return r

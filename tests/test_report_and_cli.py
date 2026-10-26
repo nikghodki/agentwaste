@@ -85,3 +85,16 @@ def test_usd_estimate_is_optional(transcript, capsys):
     assert "$" not in capsys.readouterr().out
     main(["--path", str(root), "--days", "0", "--usd-per-mtok", "15"])
     assert "$" in capsys.readouterr().out
+
+
+def test_informational_findings_do_not_affect_waste_or_grade(transcript):
+    t = transcript()
+    for i in range(4):
+        t.assistant(T(i * 10), f"q{i}", input=60000, model="qwen3.8-27b")
+    t.write()
+    r = analyze(t.path.parent.parent)
+    info = [f for f in r.findings if f.key == "uncached_context_self_hosted"]
+    assert info and info[0].count == 3
+    assert r.waste == 0 and r.grade == "A"
+    text = render_text(r)
+    assert "Not counted in the grade" in text and "qwen3.8-27b" in text
