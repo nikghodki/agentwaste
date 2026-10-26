@@ -1,0 +1,25 @@
+name: Release to PyPI
+
+# Publishes when a GitHub release is published. Uses PyPI trusted publishing,
+# so no token is stored: configure it once at https://pypi.org/manage/account/publishing/
+# (owner nikghodki, repository agentwaste, workflow release.yml, environment pypi).
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install build && python -m build
+      - uses: pypa/gh-action-pypi-publish@release/v1
