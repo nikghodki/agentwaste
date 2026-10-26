@@ -1,0 +1,52 @@
+---
+title: "JSON output"
+description: "The --json schema."
+---
+
+```bash
+agentwaste --json
+```
+
+```json
+{
+  "sessions": 111,
+  "streams": 240,
+  "model_calls": 78496,
+  "tool_calls": 90274,
+  "fresh_input": 10600000,
+  "cache_write": 1178000000,
+  "cache_read": 18392000000,
+  "output": 22300000,
+  "priced_input": 3322300000,
+  "waste": 1130000000,
+  "waste_pct": 34.01,
+  "grade": "D",
+  "first_ts": 1788220800.0,
+  "last_ts": 1792972800.0,
+  "usd_per_mtok": null,
+  "findings": [
+    {
+      "key": "idle_cache_rebuild",
+      "title": "Re-caching after idle breaks",
+      "count": 2588,
+      "waste": 1074500000,
+      "counted": true,
+      "examples": [{ "label": "my-repo", "count": 1200 }],
+      "fix": "The prompt cache expires after 5 minutes idle, ..."
+    }
+  ]
+}
+```
+
+| Field | Meaning |
+| --- | --- |
+| `priced_input` | Total input in [token-equivalents](/how-it-works#token-equivalents) |
+| `waste` | Sum of counted findings, capped at `priced_input` |
+| `waste_pct`, `grade` | Waste share and its [grade](/how-it-works#waste-and-the-grade) |
+| `first_ts`, `last_ts` | Unix timestamps of the first and last model call |
+| `findings[].key` | Detector key, see the [overview](/detectors/overview) |
+| `findings[].counted` | `false` for informational findings, excluded from `waste` |
+| `findings[].examples` | Worst offenders: projects, files, tools or models, by detector |
+
+Findings are listed counted-first, then by waste, largest first. The example values
+above are illustrative.

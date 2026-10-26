@@ -1,0 +1,26 @@
+---
+title: "Error thrash"
+description: "Retrying a failing command over and over."
+---
+
+**Key:** `error_thrash`
+
+## What it is
+
+The agent keeps calling a tool that keeps failing, usually the same command with
+small variations, without the information it needs to fix the cause.
+
+## How it's detected
+
+An episode starts when the same tool fails **3** times in a row within a stream. Any
+success of that tool ends the run.
+
+**Waste** = the priced input of the model calls that issued the 3rd and later failing
+attempts.
+
+## How to fix it
+
+- Interrupt, and give the agent the missing context (an env var, a service that isn't
+  running, the right command).
+- Put the fix in `CLAUDE.md` so it doesn't happen again.
+- Add a hook that stops after repeated failures.

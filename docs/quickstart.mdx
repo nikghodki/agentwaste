@@ -1,0 +1,66 @@
+---
+title: "Quickstart"
+description: "Your first waste report in under a minute."
+---
+
+<Steps>
+  <Step title="Run it">
+    agentwaste has no dependencies and needs Python 3.10 or newer.
+
+    <Tabs>
+      <Tab title="uv">
+        ```bash
+        uvx agentwaste
+        ```
+      </Tab>
+      <Tab title="pipx">
+        ```bash
+        pipx run agentwaste
+        ```
+      </Tab>
+      <Tab title="pip">
+        ```bash
+        pip install agentwaste
+        agentwaste
+        ```
+      </Tab>
+    </Tabs>
+
+    By default it reads the last 30 days of Claude Code sessions from
+    `~/.claude/projects`.
+  </Step>
+  <Step title="Read the report">
+    ```text
+    agentwaste: 111 sessions, 78,496 model calls, 90,274 tool calls  (2026-09-01 to 2026-10-26)
+
+    Priced input: 3.3B token-equivalents   (cache writes 1.2B, cache reads 18.4B, fresh 10.6M; output 22.3M)
+    Estimated waste: 1.1B (34%)   Grade: D
+
+     32.3%  Re-caching after idle breaks  (2,588x, 1.1B eq)
+            Fix: The prompt cache expires after 5 minutes idle, so the next message re-writes
+            the whole context at 1.25x. Run /compact (or /clear) before a break, ...
+    ```
+
+    Findings are sorted by waste. Each one shows how often it happened, its cost in
+    [token-equivalents](/how-it-works#token-equivalents), the worst examples, and a fix.
+  </Step>
+  <Step title="Share your card (optional)">
+    ```bash
+    uvx agentwaste --card my-card.html
+    ```
+
+    Opens as a single HTML file with your grade and top waste categories, and nothing
+    else. See [Sharing your card](/guides/sharing-your-card).
+  </Step>
+</Steps>
+
+## Common options
+
+```bash
+uvx agentwaste --days 7               # just the last week
+uvx agentwaste --days 0               # everything
+uvx agentwaste --usd-per-mtok 3       # add dollar estimates at $3 per million input tokens
+uvx agentwaste --json > waste.json    # machine-readable output
+```
+
+See the [CLI reference](/reference/cli) for every flag.

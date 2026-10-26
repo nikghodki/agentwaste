@@ -1,0 +1,44 @@
+---
+title: "CLI reference"
+description: "Every flag."
+---
+
+```bash
+agentwaste [--path DIR] [--days N] [--json] [--card FILE] [--usd-per-mtok USD] [--top N]
+```
+
+<ParamField path="--path" type="directory" default="~/.claude/projects">
+  Where to read Claude Code transcripts from.
+</ParamField>
+
+<ParamField path="--days" type="number" default="30">
+  Only include model calls from the last N days. `0` includes everything.
+</ParamField>
+
+<ParamField path="--json" type="flag">
+  Print [JSON](/reference/json-output) instead of the report.
+</ParamField>
+
+<ParamField path="--card" type="file">
+  Also write a [shareable HTML card](/guides/sharing-your-card) to this path.
+</ParamField>
+
+<ParamField path="--usd-per-mtok" type="number">
+  Add dollar estimates at this price per million input tokens. Applied to
+  token-equivalents, so use your model's fresh-input price.
+</ParamField>
+
+<ParamField path="--top" type="number" default="3">
+  How many examples to show for each finding.
+</ParamField>
+
+<ParamField path="--version" type="flag">
+  Print the version and exit.
+</ParamField>
+
+## Exit codes
+
+| Code | Meaning |
+| --- | --- |
+| 0 | Report printed |
+| 1 | No sessions found in the chosen path and time window |

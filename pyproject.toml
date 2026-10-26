@@ -3,97 +3,32 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "agentsight"
+name = "agentwaste"
 version = "0.1.0"
-description = "Framework-agnostic agent observability SDK built on OpenTelemetry"
+description = "Find where your AI coding agent wastes tokens, and how to stop it"
+readme = "README.md"
 requires-python = ">=3.10"
 license = {text = "MIT"}
-authors = [{ name = "AI Platform Team" }]
+authors = [{ name = "nikghodki", email = "nikghodki@gmail.com" }]
+dependencies = []
 classifiers = [
-    "Development Status :: 4 - Beta",
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
     "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
-    "Topic :: Software Development :: Libraries",
-    "Topic :: System :: Monitoring",
+    "Topic :: Software Development",
 ]
-dependencies = [
-    "opentelemetry-api>=1.20.0",
-    "opentelemetry-sdk>=1.20.0",
-]
+
+[project.scripts]
+agentwaste = "agentwaste.cli:main"
 
 [project.optional-dependencies]
-otlp = [
-    "opentelemetry-exporter-otlp-proto-grpc>=1.20.0",
-    "opentelemetry-exporter-otlp-proto-http>=1.20.0",
-]
-langchain = [
-    "langchain-core>=0.1.0",
-]
-langgraph = [
-    "langchain-core>=0.1.0",
-    "langgraph>=0.2.0",
-]
-crewai = [
-    "crewai>=0.1.0",
-]
-openai-agents = [
-    "openai-agents>=0.1.0",
-]
-llamaindex = [
-    "llama-index-core>=0.10.0",
-]
-semantic-kernel = [
-    "semantic-kernel>=1.0.0",
-]
-haystack = [
-    "haystack-ai>=2.0.0",
-]
-smolagents = [
-    "smolagents>=1.0.0",
-]
-google-adk = [
-    "google-adk>=0.1.0",
-]
-pydantic-ai = [
-    "pydantic-ai>=0.1.0",
-]
-phidata = [
-    "phidata>=2.0.0",
-]
-console = [
-    "opentelemetry-exporter-otlp>=1.20.0",
-]
-dev = [
-    "pytest>=7.0",
-    "pytest-asyncio>=0.21",
-    "pytest-cov>=4.0",
-    "ruff>=0.4.0",
-    "mypy>=1.8",
-]
-all = [
-    "agentsight[otlp,langchain,langgraph,crewai,openai-agents,llamaindex,semantic-kernel,haystack,smolagents,google-adk,pydantic-ai,phidata,dev]",
-]
+dev = ["pytest>=7.0"]
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/agentsight"]
-
-[tool.ruff]
-target-version = "py310"
-line-length = 120
-src = ["src"]
-
-[tool.ruff.lint]
-select = ["E", "F", "W", "I", "N", "UP", "B", "SIM", "RUF"]
-
-[tool.mypy]
-python_version = "3.10"
-strict = true
-warn_return_any = true
-warn_unused_configs = true
+packages = ["src/agentwaste"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-asyncio_mode = "auto"
+pythonpath = ["src"]

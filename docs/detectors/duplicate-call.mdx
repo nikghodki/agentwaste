@@ -1,0 +1,27 @@
+---
+title: "Duplicate call"
+description: "Running the same search or fetch twice."
+---
+
+**Key:** `duplicate_call`
+
+## What it is
+
+The agent repeats an identical read-only lookup, such as the same search or the same
+web fetch, when nothing could have changed the answer.
+
+## How it's detected
+
+A call to `Grep`, `Glob`, `LS`, `WebFetch` or `WebSearch` is flagged when an
+identical call (same tool, same input) already ran in the stream, with no `Edit`,
+`Write`, `MultiEdit`, `NotebookEdit` or `Bash` call in between.
+
+`Bash` commands are never counted as duplicates. Running `pytest` twice is usually
+deliberate.
+
+**Waste** = result tokens x 1.25.
+
+## How to fix it
+
+- Ask the agent to reuse earlier results.
+- Make the first search more specific so it doesn't need repeating.

@@ -1,0 +1,42 @@
+---
+title: "Uncached context"
+description: "Re-sending the whole conversation every turn."
+---
+
+**Keys:** `uncached_context` (Claude models), `uncached_context_self_hosted` (other models)
+
+## What it is
+
+When prompt caching is working, each turn reads most of the conversation from the
+cache at 0.1x. When it isn't, every turn re-sends the whole conversation as fresh
+input at full price.
+
+## How it's detected
+
+A model call is flagged when it isn't the first call in its stream and has at least
+**20,000** fresh (uncached) input tokens.
+
+**Waste** = fresh tokens x (1 - 0.1): what caching would have saved.
+
+## Claude models
+
+Counted in the waste total and grade. The usual cause is a proxy or gateway between
+the agent and the API (LiteLLM, Bedrock, a custom base URL) that drops the
+`cache_control` markers, or a model where caching isn't enabled.
+
+**Fix:** make sure your proxy passes prompt-caching markers through, and that
+caching is enabled for the model you use.
+
+## Self-hosted models
+
+Reported as **informational** and not counted in the grade. For a model you run
+yourself, re-processing context costs GPU prefill time and latency rather than
+Claude-priced tokens, so pricing it with Claude's weights would mislead.
+
+The fix quotes the measured share of this model's input served from its prefix
+cache. To raise it:
+
+- check prefix caching is on in your server (it's the default in recent vLLM;
+  SGLang uses RadixAttention),
+- leave enough free KV-cache memory that cached prefixes aren't evicted,
+- route all requests from one session to the same replica.

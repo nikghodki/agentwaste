@@ -1,105 +1,61 @@
-"""
-Shared test fixtures for agentsight tests.
-
-OTel global providers can only be set once per process. We use session-scoped
-setup for the providers and clear the in-memory exporter before each test.
-"""
-
-from __future__ import annotations
-
-import threading
-from typing import Sequence
+import json
 
 import pytest
-from opentelemetry import metrics, trace
-from opentelemetry.sdk.metrics import MeterProvider
-from opentelemetry.sdk.metrics.export import InMemoryMetricReader
-from opentelemetry.sdk.resources import Resource
-from opentelemetry.sdk.trace import ReadableSpan, TracerProvider
-from opentelemetry.sdk.trace.export import (
-    SimpleSpanProcessor,
-    SpanExporter,
-    SpanExportResult,
-)
-
-from agentsight.observer import AgentObserver
-from agentsight.redaction import PayloadPolicy
 
 
-class InMemorySpanExporter(SpanExporter):
-    """Minimal in-memory exporter for test assertions."""
+class TranscriptBuilder:
+    """Writes synthetic Claude Code JSONL transcripts for tests. Never use real
+    logs as fixtures: they contain code, paths and secrets."""
 
-    def __init__(self) -> None:
-        self._spans: list[ReadableSpan] = []
-        self._lock = threading.Lock()
+    def __init__(self, path, session="s1", sidechain=False):
+        self.path = path
+        self.session = session
+        self.sidechain = sidechain
+        self.records = []
+        self._n = 0
 
-    def export(self, spans: Sequence[ReadableSpan]) -> SpanExportResult:
-        with self._lock:
-            self._spans.extend(spans)
-        return SpanExportResult.SUCCESS
+    def _base(self, kind, ts):
+        self._n += 1
+        return {"type": kind, "sessionId": self.session, "isSidechain": self.sidechain,
+                "timestamp": ts, "uuid": f"u{self._n}", "cwd": "/home/dev/project"}
 
-    def get_finished_spans(self) -> list[ReadableSpan]:
-        with self._lock:
-            return list(self._spans)
+    def assistant(self, ts, msg_id, *, input=0, cache_write=0, cache_read=0, output=0,
+                  cache_1h=None, tools=(), model="claude-test", split=False):
+        usage = {"input_tokens": input, "cache_creation_input_tokens": cache_write,
+                 "cache_read_input_tokens": cache_read, "output_tokens": output}
+        if cache_1h is not None:
+            usage["cache_creation"] = {"ephemeral_5m_input_tokens": cache_write - cache_1h,
+                                       "ephemeral_1h_input_tokens": cache_1h}
+        blocks = [{"type": "tool_use", "id": tid, "name": name, "input": inp} for tid, name, inp in tools]
+        chunks = [[b] for b in blocks] if split and blocks else [blocks or [{"type": "text", "text": "ok"}]]
+        for chunk in chunks:
+            rec = self._base("assistant", ts)
+            rec["message"] = {"id": msg_id, "role": "assistant", "model": model, "usage": usage, "content": chunk}
+            self.records.append(rec)
+        return self
 
-    def clear(self) -> None:
-        with self._lock:
-            self._spans.clear()
+    def result(self, ts, tool_id, text="", is_error=False):
+        rec = self._base("user", ts)
+        rec["message"] = {"role": "user", "content": [
+            {"type": "tool_result", "tool_use_id": tool_id, "content": text, "is_error": is_error}]}
+        self.records.append(rec)
+        return self
 
-    def shutdown(self) -> None:
-        pass
+    def raw(self, line):
+        self.records.append(line)
+        return self
 
-    def force_flush(self, timeout_millis: int = 0) -> bool:
-        return True
-
-
-# Module-level singletons — set once, reused across all tests
-_span_exporter = InMemorySpanExporter()
-_metric_reader = InMemoryMetricReader()
-_otel_initialized = False
-
-
-def _ensure_otel() -> None:
-    global _otel_initialized
-    if _otel_initialized:
-        return
-    resource = Resource.create({"service.name": "test"})
-
-    tracer_provider = TracerProvider(resource=resource)
-    tracer_provider.add_span_processor(SimpleSpanProcessor(_span_exporter))
-    trace.set_tracer_provider(tracer_provider)
-
-    meter_provider = MeterProvider(resource=resource, metric_readers=[_metric_reader])
-    metrics.set_meter_provider(meter_provider)
-
-    _otel_initialized = True
-
-
-@pytest.fixture(autouse=True)
-def _reset_exporter():
-    """Clear collected spans before each test so tests are isolated."""
-    _ensure_otel()
-    _span_exporter.clear()
-    yield
+    def write(self):
+        with open(self.path, "w") as fh:
+            for r in self.records:
+                fh.write((r if isinstance(r, str) else json.dumps(r)) + "\n")
+        return self.path
 
 
 @pytest.fixture
-def span_exporter() -> InMemorySpanExporter:
-    """Access the shared in-memory span exporter."""
-    return _span_exporter
-
-
-@pytest.fixture
-def metric_reader() -> InMemoryMetricReader:
-    """Access the shared in-memory metric reader."""
-    return _metric_reader
-
-
-@pytest.fixture
-def observer() -> AgentObserver:
-    """Pre-configured observer for tests."""
-    return AgentObserver(
-        tracer_name="test-agent",
-        meter_name="test-agent",
-        payload_policy=PayloadPolicy(),
-    )
+def transcript(tmp_path):
+    def make(name="session.jsonl", **kw):
+        project = tmp_path / "projects" / "-home-dev-project"
+        project.mkdir(parents=True, exist_ok=True)
+        return TranscriptBuilder(project / name, **kw)
+    return make
