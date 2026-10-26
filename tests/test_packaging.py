@@ -2,7 +2,6 @@
 paths, so every image and link must be absolute."""
 
 import re
-import tomllib
 from pathlib import Path
 
 import agentwaste
@@ -18,5 +17,6 @@ def test_readme_has_no_relative_links_or_images():
 
 
 def test_package_version_matches_pyproject():
-    meta = tomllib.loads((ROOT / "pyproject.toml").read_text())
-    assert meta["project"]["version"] == agentwaste.__version__
+    # Regex, not tomllib: tomllib is 3.11+ and agentwaste supports 3.10.
+    version = re.search(r'^version = "([^"]+)"', (ROOT / "pyproject.toml").read_text(), re.M).group(1)
+    assert version == agentwaste.__version__
