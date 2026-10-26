@@ -7,14 +7,14 @@
 [![CI](https://github.com/nikghodki/agentwaste/actions/workflows/ci.yml/badge.svg)](https://github.com/nikghodki/agentwaste/actions/workflows/ci.yml)
 [![Docs](https://img.shields.io/badge/docs-nikghodki.github.io%2Fagentwaste-ff7a59)](https://nikghodki.github.io/agentwaste/)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/)
-[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](https://github.com/nikghodki/agentwaste/tree/main/LICENSE)
 
 [**Documentation**](https://nikghodki.github.io/agentwaste/) ·
 [Quickstart](https://nikghodki.github.io/agentwaste/quickstart/) ·
 [How it works](https://nikghodki.github.io/agentwaste/how-it-works/) ·
-[Contributing](CONTRIBUTING.md)
+[Contributing](https://github.com/nikghodki/agentwaste/blob/main/CONTRIBUTING.md)
 
-<img src="assets/report.png" alt="agentwaste report: 41% waste, grade D, with re-caching after idle breaks as the top finding and a fix for each pattern" width="820">
+<img src="https://raw.githubusercontent.com/nikghodki/agentwaste/main/assets/report.png" alt="agentwaste report: 41% waste, grade D, with re-caching after idle breaks as the top finding and a fix for each pattern" width="820">
 
 </div>
 
@@ -64,7 +64,7 @@ Every finding comes with its cost, the worst offenders and a specific fix.
 
 ## Share your grade
 
-<img src="assets/card.png" alt="Shareable agentwaste card: grade D, 41% of input tokens wasted, top categories re-caching after idle breaks, huge tool outputs and uncached context" width="300" align="right">
+<img src="https://raw.githubusercontent.com/nikghodki/agentwaste/main/assets/card.png" alt="Shareable agentwaste card: grade D, 41% of input tokens wasted, top categories re-caching after idle breaks, huge tool outputs and uncached context" width="300" align="right">
 
 ```bash
 agentwaste --card my-card.html
@@ -110,15 +110,15 @@ Ideas and votes welcome in [issues](https://github.com/nikghodki/agentwaste/issu
 ## Contributing
 
 Contributions are very welcome, especially **new log sources** (Codex, Gemini
-CLI, OpenCode) and **new detectors**. Start with [CONTRIBUTING.md](CONTRIBUTING.md):
+CLI, OpenCode) and **new detectors**. Start with [CONTRIBUTING.md](https://github.com/nikghodki/agentwaste/blob/main/CONTRIBUTING.md):
 
 ```bash
 git clone https://github.com/nikghodki/agentwaste && cd agentwaste
 python3 -m venv .venv && .venv/bin/pip install -e ".[dev]" && .venv/bin/pytest
 ```
 
-The original AgentSight SDK lives on in [`legacy/agentsight`](legacy/agentsight).
+The original AgentSight SDK lives on in [`legacy/agentsight`](https://github.com/nikghodki/agentwaste/tree/main/legacy/agentsight).
 
 ## License
 
-[MIT](LICENSE)
+[MIT](https://github.com/nikghodki/agentwaste/tree/main/LICENSE)
