@@ -6,7 +6,9 @@ description: "A shareable summary that contains nothing private."
 import { Aside } from '@astrojs/starlight/components';
 
 ```bash
-uvx agentwaste --card my-card.html
+agentwaste --card my-card.html
+# or, without installing:
+uvx --from git+https://github.com/nikghodki/agentwaste agentwaste --card my-card.html
 ```
 
 This writes a single, self-contained HTML file with:
