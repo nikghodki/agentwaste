@@ -1,0 +1,18 @@
+[
+  { "label": "Get started", "items": ["quickstart", "how-it-works"] },
+  {
+    "label": "Detectors",
+    "items": [
+      "detectors/overview",
+      "detectors/idle-cache-rebuild",
+      "detectors/uncached-context",
+      "detectors/reread",
+      "detectors/duplicate-call",
+      "detectors/huge-result",
+      "detectors/error-thrash"
+    ]
+  },
+  { "label": "Guides", "items": ["guides/sharing-your-card", "guides/reducing-waste"] },
+  { "label": "Reference", "items": ["reference/cli", "reference/json-output", "privacy", "faq"] },
+  { "label": "Project", "items": ["contributing"] }
+]

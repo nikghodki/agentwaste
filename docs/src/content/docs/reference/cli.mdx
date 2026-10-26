@@ -1,0 +1,26 @@
+---
+title: "CLI reference"
+description: "Every flag."
+---
+
+```bash
+agentwaste [--path DIR] [--days N] [--json] [--card FILE] [--usd-per-mtok USD] [--top N] [--demo]
+```
+
+| Flag | Default | Description |
+| --- | --- | --- |
+| `--path DIR` | `~/.claude/projects` | Where to read Claude Code transcripts from. |
+| `--days N` | `30` | Only include model calls from the last N days. `0` includes everything. |
+| `--json` | | Print [JSON](/agentwaste/reference/json-output/) instead of the report. |
+| `--card FILE` | | Also write a [shareable HTML card](/agentwaste/guides/sharing-your-card/) to this path. |
+| `--usd-per-mtok USD` | | Add dollar estimates at this price per million input tokens. Applied to token-equivalents, so use your model's fresh-input price. |
+| `--top N` | `3` | How many examples to show for each finding. |
+| `--demo` | | Run on built-in synthetic sessions instead of your logs. |
+| `--version` | | Print the version and exit. |
+
+## Exit codes
+
+| Code | Meaning |
+| --- | --- |
+| 0 | Report printed |
+| 1 | No sessions found in the chosen path and time window |

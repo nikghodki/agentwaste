@@ -1,0 +1,17 @@
+name: New log source
+description: Support another coding agent (Codex, Gemini CLI, OpenCode, ...).
+labels: [source]
+body:
+  - type: input
+    id: agent
+    attributes:
+      label: Agent and version
+    validations:
+      required: true
+  - type: textarea
+    id: location
+    attributes:
+      label: Where does it write logs, and in what format?
+      description: Path, file format, and a **made-up** example record showing the usage and tool-call fields. Don't paste real logs.
+    validations:
+      required: true

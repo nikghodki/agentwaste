@@ -11,16 +11,19 @@ from agentwaste import cost, detectors
 from agentwaste.analysis import GRADES
 from agentwaste.cli import build_parser
 
-DOCS = Path(__file__).resolve().parent.parent / "docs"
+ROOT = Path(__file__).resolve().parent.parent
+DOCS = ROOT / "docs"
+PAGES = DOCS / "src" / "content" / "docs"
+BASE = "/agentwaste/"
 
 
 def nav_pages():
-    cfg = json.loads((DOCS / "docs.json").read_text())
-    return [p for g in cfg["navigation"]["groups"] for p in g["pages"]]
+    groups = json.loads((DOCS / "sidebar.json").read_text())
+    return ["index"] + [p for g in groups for p in g["items"]]
 
 
 def mdx(page):
-    return (DOCS / f"{page}.mdx").read_text()
+    return (PAGES / f"{page}.mdx").read_text()
 
 
 @pytest.mark.parametrize("page", nav_pages())
@@ -39,9 +42,26 @@ def test_mdx_component_tags_are_balanced(page):
 
 @pytest.mark.parametrize("page", nav_pages())
 def test_internal_links_point_at_real_pages(page):
-    for link in re.findall(r"\]\((/[^)#]*)", mdx(page)):
-        target = link.strip("/") or "index"
-        assert (DOCS / f"{target}.mdx").exists(), f"{page}: broken link {link}"
+    for link in re.findall(r'(?:\]\(|href="|link: )(/[^)"#\s]*)', mdx(page)):
+        assert link.startswith(BASE), f"{page}: link {link} is missing the {BASE} base path"
+        target = link[len(BASE):].strip("/") or "index"
+        assert (PAGES / f"{target}.mdx").exists(), f"{page}: broken link {link}"
+
+
+def test_every_page_is_in_the_sidebar():
+    on_disk = {str(p.relative_to(PAGES).with_suffix("")) for p in PAGES.rglob("*.mdx")}
+    assert on_disk == set(nav_pages())
+
+
+def test_quickstart_shows_the_real_demo_output():
+    from agentwaste.demo import demo_streams
+    from agentwaste.analysis import analyze
+    from agentwaste.report import render_text
+    real = render_text(analyze(demo_streams())).splitlines()
+    block = re.search(r"```text\n(.*?)```", mdx("quickstart"), re.S).group(1)
+    shown = [l.strip() for l in block.splitlines() if l.strip() and not l.strip().endswith("...")]
+    for line in shown:
+        assert line in [r.strip() for r in real], f"quickstart shows {line!r}, not in the real --demo output"
 
 
 def number(n):
@@ -76,7 +96,7 @@ def test_every_cli_flag_is_documented():
     page = mdx("reference/cli")
     flags = {o for a in build_parser()._actions for o in a.option_strings if o.startswith("--")}
     for flag in flags - {"--help"}:
-        assert f'path="{flag}"' in page, f"{flag} not documented in reference/cli.mdx"
+        assert re.search(rf"\| `{flag}[ `]", page), f"{flag} not documented in reference/cli.mdx"
 
 
 def test_every_detector_key_is_documented():

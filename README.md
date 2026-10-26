@@ -1,73 +1,115 @@
+<div align="center">
+
 # agentwaste
 
-**Find where your AI coding agent wastes tokens, and how to stop it.**
+**Your AI coding agent is wasting tokens. Find out where, and how to stop it.**
 
-agentwaste reads the session logs Claude Code already keeps on your computer,
-finds the patterns that burn tokens for nothing, and tells you what to change.
-Usage trackers tell you *how much* you used; agentwaste tells you *why*, and how
-much of it was avoidable.
+[![CI](https://github.com/nikghodki/agentwaste/actions/workflows/ci.yml/badge.svg)](https://github.com/nikghodki/agentwaste/actions/workflows/ci.yml)
+[![Docs](https://img.shields.io/badge/docs-nikghodki.github.io%2Fagentwaste-ff7a59)](https://nikghodki.github.io/agentwaste/)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+
+[**Documentation**](https://nikghodki.github.io/agentwaste/) ·
+[Quickstart](https://nikghodki.github.io/agentwaste/quickstart/) ·
+[How it works](https://nikghodki.github.io/agentwaste/how-it-works/) ·
+[Contributing](CONTRIBUTING.md)
+
+<img src="assets/report.png" alt="agentwaste report: 41% waste, grade D, with re-caching after idle breaks as the top finding and a fix for each pattern" width="820">
+
+</div>
+
+## Try it in 10 seconds
 
 ```bash
-uvx agentwaste
+uvx --from git+https://github.com/nikghodki/agentwaste agentwaste
 ```
 
-```text
-agentwaste: 111 sessions, 78,496 model calls, 90,274 tool calls  (2026-09-01 to 2026-10-26)
+That's it: no install, no account, no config. It reads the Claude Code logs
+already on your machine and prints a report. No history yet? Add `--demo`.
 
-Priced input: 3.3B token-equivalents   (cache writes 1.2B, cache reads 18.4B, fresh 10.6M; output 22.3M)
-Estimated waste: 1.1B (34%)   Grade: D
+## Why
 
- 32.3%  Re-caching after idle breaks  (2,588x, 1.1B eq)
-        Fix: The prompt cache expires after 5 minutes idle, so the next message re-writes
-        the whole context at 1.25x. Run /compact (or /clear) before a break, ...
-```
+Usage trackers tell you **how much** you used. agentwaste tells you **why**,
+and how much of it was avoidable.
+
+On one developer's month of Claude Code use, **about a third of all input cost
+was re-caching the conversation after stepping away for more than five
+minutes.** Nobody noticed, because nothing showed it.
+
+Whether you pay per token or hit subscription limits, that's waste you can fix
+in minutes once you can see it.
 
 ## What it finds
 
-| Pattern | What happens |
-| --- | --- |
-| Idle cache rebuild | You step away, the 5-minute prompt cache expires, and the next message re-writes the whole context |
-| Uncached context | Every turn re-sends the conversation without prompt caching (often a proxy dropping cache markers) |
-| Re-read | The agent reads a file it already read, with no change in between |
-| Duplicate call | The same search or fetch runs again with nothing changed |
-| Huge result | One tool output over 10k tokens, carried in every later message |
-| Error thrash | The same tool fails 3+ times in a row |
+| | Pattern | What's happening | The fix |
+|---|---|---|---|
+| ⏸️ | **Idle cache rebuild** | You step away, the 5-minute prompt cache expires, and the next message re-writes the whole context at 1.25x | `/compact` before a break, or the 1-hour cache |
+| 🔁 | **Uncached context** | Every turn re-sends the conversation without caching, often because a proxy drops cache markers | Fix the proxy so caching survives |
+| 📄 | **Re-read** | The agent re-reads a file it already read, with no change in between | Put the facts in `CLAUDE.md` |
+| 🔍 | **Duplicate call** | The same search or fetch runs again with nothing changed | Reuse results, search more precisely |
+| 📦 | **Huge result** | One 10k+ token output, carried in every later message | `head`, filters, ranged reads |
+| 💥 | **Error thrash** | The same tool fails 3+ times in a row | Give the agent the missing context |
 
-Each finding comes with its cost, the worst examples and a specific fix.
-Self-hosted models are reported separately: their cost is GPU time, not tokens,
-so they don't affect the grade.
+Every finding comes with its cost, the worst offenders and a specific fix.
+[Exact definitions →](https://nikghodki.github.io/agentwaste/detectors/overview/)
 
-## Options
+## Share your grade
 
-```bash
-uvx agentwaste --days 7               # last week only (default 30; 0 = everything)
-uvx agentwaste --card card.html       # shareable card, aggregates only
-uvx agentwaste --usd-per-mtok 3       # add dollar estimates
-uvx agentwaste --json                 # machine-readable output
-```
-
-## Privacy
-
-Local only and read-only: no network requests, and your logs are never changed.
-The shareable card contains aggregates only, with no paths, project names,
-commands or content; a test enforces this. The terminal report and JSON are for
-you and can name files and projects.
-
-## Docs
-
-Full documentation is in [`docs/`](docs/) (MDX, Mintlify): how the cost model
-works, exact detector definitions, CLI and JSON reference.
-
-## Development
+<img src="assets/card.png" alt="Shareable agentwaste card: grade D, 41% of input tokens wasted, top categories re-caching after idle breaks, huge tool outputs and uncached context" width="300" align="right">
 
 ```bash
-python3 -m venv .venv && .venv/bin/pip install -e ".[dev]"
-.venv/bin/pytest
+agentwaste --card my-card.html
 ```
 
-No runtime dependencies; Python 3.10+. Tests use synthetic transcripts only.
-The original AgentSight SDK lives in [`legacy/agentsight`](legacy/agentsight).
+A one-file card with your grade and top waste categories, ready to screenshot
+and post. It contains **aggregates only**: no paths, project names, commands
+or code. A test enforces that on every change.
+
+<br clear="right">
+
+## More options
+
+```bash
+agentwaste --days 7               # last week only (default 30; 0 = everything)
+agentwaste --usd-per-mtok 3       # dollar estimates at $3 per million input tokens
+agentwaste --json > waste.json    # machine-readable, for scripts and dashboards
+agentwaste --demo                 # try it on synthetic sessions
+```
+
+Full reference: [CLI](https://nikghodki.github.io/agentwaste/reference/cli/) ·
+[JSON output](https://nikghodki.github.io/agentwaste/reference/json-output/)
+
+## Private by design
+
+- **Local and read-only.** No network requests, nothing uploaded, your logs are never changed.
+- **No dependencies.** Plain Python 3.10+, so there's nothing hidden to audit.
+- **Honest numbers.** Costs are in [token-equivalents](https://nikghodki.github.io/agentwaste/how-it-works/#token-equivalents)
+  that weight cache writes, cache reads and fresh input the way they're actually
+  billed. Self-hosted models are reported separately, since their cost is GPU
+  time, not tokens.
+
+## Roadmap
+
+- [x] Claude Code support, six detectors, report, JSON, shareable card
+- [ ] Codex support
+- [ ] `pip install agentwaste` / `uvx agentwaste` from PyPI
+- [ ] Live warnings while you work ("your cache expires in 1 minute")
+- [ ] Before/after comparison: did the fix actually help?
+
+Ideas and votes welcome in [issues](https://github.com/nikghodki/agentwaste/issues).
+
+## Contributing
+
+Contributions are very welcome, especially **new log sources** (Codex, Gemini
+CLI, OpenCode) and **new detectors**. Start with [CONTRIBUTING.md](CONTRIBUTING.md):
+
+```bash
+git clone https://github.com/nikghodki/agentwaste && cd agentwaste
+python3 -m venv .venv && .venv/bin/pip install -e ".[dev]" && .venv/bin/pytest
+```
+
+The original AgentSight SDK lives on in [`legacy/agentsight`](legacy/agentsight).
 
 ## License
 
-MIT
+[MIT](LICENSE)

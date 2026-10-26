@@ -1,0 +1,42 @@
+---
+title: "FAQ"
+description: "Common questions."
+---
+
+<details>
+<summary>I'm on a subscription, does this matter?</summary>
+
+Yes. Waste doesn't show up as a bill, but it uses up your plan's limits, so you hit them
+sooner. The patterns and fixes are the same.
+</details>
+
+<details>
+<summary>Why token-equivalents instead of dollars?</summary>
+
+Prices and plans change, and cache reads, cache writes and fresh input are all priced
+differently. Token-equivalents compare them fairly. Add `--usd-per-mtok` for a dollar
+estimate. See [How it works](/agentwaste/how-it-works/#token-equivalents).
+</details>
+
+<details>
+<summary>Is the waste figure exact?</summary>
+
+No. It's an estimate of what each pattern cost, and some of it can't be avoided. Each
+detector page explains exactly how it's computed.
+</details>
+
+<details>
+<summary>Why is my self-hosted model "not counted"?</summary>
+
+Its cost is GPU time and latency, not Claude-priced tokens. agentwaste still shows the
+finding and your measured prefix-cache hit rate. See
+[Uncached context](/agentwaste/detectors/uncached-context/#self-hosted-models).
+</details>
+
+<details>
+<summary>Which agents are supported?</summary>
+
+Claude Code today. Codex is next. Each source turns its logs into the same session
+model, so the detectors work unchanged. Want another agent supported? See
+[Contributing](/agentwaste/contributing/).
+</details>

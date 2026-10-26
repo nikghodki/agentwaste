@@ -11,14 +11,26 @@ requires-python = ">=3.10"
 license = {text = "MIT"}
 authors = [{ name = "nikghodki", email = "nikghodki@gmail.com" }]
 dependencies = []
+keywords = ["claude-code", "ai-agents", "llm", "tokens", "prompt-caching", "cost", "developer-tools", "cli"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Environment :: Console",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Topic :: Software Development",
+    "Topic :: Utilities",
 ]
+
+[project.urls]
+Homepage = "https://github.com/nikghodki/agentwaste"
+Documentation = "https://nikghodki.github.io/agentwaste/"
+Issues = "https://github.com/nikghodki/agentwaste/issues"
+Changelog = "https://github.com/nikghodki/agentwaste/blob/main/CHANGELOG.md"
 
 [project.scripts]
 agentwaste = "agentwaste.cli:main"

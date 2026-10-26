@@ -1,0 +1,30 @@
+---
+title: "Contributing"
+description: "How to add a detector, a log source, or a fix."
+---
+
+agentwaste is MIT-licensed and contributions are welcome. The full guide is
+[CONTRIBUTING.md](https://github.com/nikghodki/agentwaste/blob/main/CONTRIBUTING.md); the
+short version:
+
+```bash
+git clone https://github.com/nikghodki/agentwaste
+cd agentwaste
+python3 -m venv .venv && .venv/bin/pip install -e ".[dev]"
+.venv/bin/pytest
+```
+
+## Good first contributions
+
+- **A new log source.** Codex, Gemini CLI, OpenCode and others each need a reader in
+  `src/agentwaste/sources/` that returns `Stream` objects. Detectors then work unchanged.
+- **A new detector.** Add it to `src/agentwaste/detectors.py`, document it in
+  `docs/src/content/docs/detectors/`, and add it to the overview table. The docs tests
+  check that every detector key is documented.
+- **Better fixes.** If you know a better way to avoid a pattern, improve its fix text.
+
+## Rules of the road
+
+- Tests use **synthetic transcripts only**. Never commit real logs.
+- The shareable card must never contain paths, project names, commands or content.
+- Numbers quoted in the docs must match the code. `tests/test_docs.py` enforces this.

@@ -3,6 +3,8 @@ title: "Idle cache rebuild"
 description: "Paying to re-cache the whole conversation after a break."
 ---
 
+import { Aside } from '@astrojs/starlight/components';
+
 **Key:** `idle_cache_rebuild`
 
 ## What it is
@@ -34,7 +36,7 @@ reading the same context from a warm cache.
   survive the break.
 - Finish a thought before stepping away rather than leaving the agent mid-task.
 
-<Note>
+<Aside>
   Some rebuilds can't be avoided, such as the first message after compaction or a
   model switch. Treat the number as an upper bound.
-</Note>
+</Aside>

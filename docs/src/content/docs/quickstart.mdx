@@ -1,0 +1,78 @@
+---
+title: "Quickstart"
+description: "Your first waste report in under a minute."
+---
+
+import { Aside, Steps, Tabs, TabItem } from '@astrojs/starlight/components';
+
+<Steps>
+
+1. **Run it.** agentwaste has no dependencies and needs Python 3.10 or newer.
+
+    <Tabs>
+      <TabItem label="uv">
+        ```bash
+        uvx --from git+https://github.com/nikghodki/agentwaste agentwaste
+        ```
+      </TabItem>
+      <TabItem label="pipx">
+        ```bash
+        pipx run --spec git+https://github.com/nikghodki/agentwaste agentwaste
+        ```
+      </TabItem>
+      <TabItem label="pip">
+        ```bash
+        pip install git+https://github.com/nikghodki/agentwaste
+        agentwaste
+        ```
+      </TabItem>
+    </Tabs>
+
+    By default it reads the last 30 days of Claude Code sessions from `~/.claude/projects`.
+    No Claude Code history yet? Add `--demo` to see a report on synthetic sessions.
+
+2. **Read the report.** This is the `--demo` output:
+
+    ```text
+    agentwaste: 13 sessions, 1,207 model calls, 1,207 tool calls  (2026-09-22 to 2026-10-04)
+
+    Priced input: 29.8M token-equivalents   (cache writes 10.7M, cache reads 151.8M, fresh 1.3M; output 602.7k)
+    Estimated waste: 12.2M (41%)   Grade: D
+
+     30.1%  Re-caching after idle breaks  (55x, 9.0M eq)
+            - demo-app: 55x
+            Fix: The prompt cache expires after 5 minutes idle, so the next message re-writes the
+            whole context at 1.25x. Run /compact (or /clear) before a break, finish a thought before
+            ...
+    ```
+
+    Findings are sorted by waste. Each one shows how often it happened, its cost in
+    [token-equivalents](/agentwaste/how-it-works/#token-equivalents), the worst examples
+    and a fix.
+
+3. **Share your card (optional).**
+
+    ```bash
+    agentwaste --card my-card.html
+    ```
+
+    A single HTML file with your grade and top waste categories, and nothing else. See
+    [Sharing your card](/agentwaste/guides/sharing-your-card/).
+
+</Steps>
+
+## Common options
+
+```bash
+agentwaste --days 7               # just the last week (default 30; 0 = everything)
+agentwaste --usd-per-mtok 3       # add dollar estimates at $3 per million input tokens
+agentwaste --json > waste.json    # machine-readable output
+agentwaste --demo                 # try it on synthetic sessions
+```
+
+See the [CLI reference](/agentwaste/reference/cli/) for every flag.
+
+<Aside type="tip">
+  agentwaste isn't on PyPI yet, so the commands above install it from GitHub. Once it's
+  published, `uvx agentwaste` will be enough.
+</Aside>

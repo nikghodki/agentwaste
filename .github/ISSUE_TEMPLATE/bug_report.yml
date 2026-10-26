@@ -1,0 +1,24 @@
+name: Bug report
+description: Something is wrong or crashes.
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What did you run, what did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: output
+    attributes:
+      label: Output
+      description: The error, or the relevant part of `agentwaste --json` with file and project names removed. Please don't paste raw transcripts.
+      render: text
+  - type: input
+    id: version
+    attributes:
+      label: Versions
+      description: "`agentwaste --version`, Python version, OS, and your agent's version (e.g. Claude Code 2.x)."
+    validations:
+      required: true

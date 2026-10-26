@@ -3,6 +3,8 @@ title: "How it works"
 description: "Where the data comes from and how waste is priced."
 ---
 
+import { Aside } from '@astrojs/starlight/components';
+
 ## Where the data comes from
 
 Claude Code writes a transcript of every session to
@@ -36,14 +38,14 @@ expensive. So the biggest wins usually come from avoiding cache rewrites.
 
 Output tokens are reported separately and aren't part of any waste estimate.
 
-<Note>
+<Aside>
   Dollar figures are opt-in with `--usd-per-mtok`, because prices and plans change.
   Token-equivalents stay meaningful when they do.
-</Note>
+</Aside>
 
 ## Waste and the grade
 
-Each [detector](/detectors/overview) estimates the eq it considers avoidable. The
+Each [detector](/agentwaste/detectors/overview/) estimates the eq it considers avoidable. The
 total waste is the sum, capped at what was actually spent, because two detectors can
 flag the same tokens (for example, a huge result that is also a re-read).
 
@@ -56,7 +58,7 @@ flag the same tokens (for example, a huge result that is also a re-read).
 | 45% or more | F |
 
 Informational findings, currently only for self-hosted models, are shown but excluded
-from the total and the grade. See [Uncached context](/detectors/uncached-context).
+from the total and the grade. See [Uncached context](/agentwaste/detectors/uncached-context/).
 
 ## Limits
 

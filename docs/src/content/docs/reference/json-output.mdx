@@ -40,11 +40,11 @@ agentwaste --json
 
 | Field | Meaning |
 | --- | --- |
-| `priced_input` | Total input in [token-equivalents](/how-it-works#token-equivalents) |
+| `priced_input` | Total input in [token-equivalents](/agentwaste/how-it-works/#token-equivalents) |
 | `waste` | Sum of counted findings, capped at `priced_input` |
-| `waste_pct`, `grade` | Waste share and its [grade](/how-it-works#waste-and-the-grade) |
+| `waste_pct`, `grade` | Waste share and its [grade](/agentwaste/how-it-works/#waste-and-the-grade) |
 | `first_ts`, `last_ts` | Unix timestamps of the first and last model call |
-| `findings[].key` | Detector key, see the [overview](/detectors/overview) |
+| `findings[].key` | Detector key, see the [overview](/agentwaste/detectors/overview/) |
 | `findings[].counted` | `false` for informational findings, excluded from `waste` |
 | `findings[].examples` | Worst offenders: projects, files, tools or models, by detector |
 

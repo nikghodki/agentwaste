@@ -6,3 +6,6 @@ dist/
 *.egg-info/
 .pytest_cache/
 .DS_Store
+docs/node_modules/
+docs/dist/
+docs/.astro/

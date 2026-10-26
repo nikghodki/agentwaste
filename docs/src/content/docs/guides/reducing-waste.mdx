@@ -1,0 +1,21 @@
+---
+title: "Reducing waste"
+description: "The habits that make the biggest difference."
+---
+
+In order of typical impact:
+
+1. **Compact or clear before a break.** The prompt cache lasts 5 minutes. Running
+   `/compact` before you step away means the context you come back to is small, so
+   re-caching it is cheap. Use `/clear` when you switch tasks. See
+   [Idle cache rebuild](/agentwaste/detectors/idle-cache-rebuild/).
+2. **Check your proxy passes cache markers.** If you reach Claude through a gateway,
+   make sure prompt caching survives the hop. See
+   [Uncached context](/agentwaste/detectors/uncached-context/).
+3. **Keep tool output small.** Limit command output with `head`, filter queries, and
+   read big files in ranges. See [Huge result](/agentwaste/detectors/huge-result/).
+4. **Write things down in `CLAUDE.md`.** Facts the agent keeps re-reading, and fixes for
+   errors it keeps hitting, belong there. See [Re-read](/agentwaste/detectors/reread/)
+   and [Error thrash](/agentwaste/detectors/error-thrash/).
+
+Re-run agentwaste a week later with `--days 7` to see whether it worked.

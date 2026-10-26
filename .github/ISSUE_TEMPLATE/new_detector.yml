@@ -1,0 +1,21 @@
+name: New detector
+description: Propose a new waste pattern to detect.
+labels: [detector]
+body:
+  - type: textarea
+    id: pattern
+    attributes:
+      label: The pattern
+      description: What does the agent do that wastes tokens, and how often have you seen it?
+    validations:
+      required: true
+  - type: textarea
+    id: rule
+    attributes:
+      label: How to detect it
+      description: A precise rule over model calls and tool calls, and how to estimate its cost.
+  - type: textarea
+    id: fix
+    attributes:
+      label: How to fix it
+      description: What should users change to avoid it?

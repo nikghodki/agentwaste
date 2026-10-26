@@ -1,0 +1,19 @@
+---
+title: "Detectors overview"
+description: "The six waste patterns agentwaste looks for."
+---
+
+Each detector looks for one pattern within a [stream](/agentwaste/how-it-works/#where-the-data-comes-from)
+and estimates its avoidable cost in [token-equivalents](/agentwaste/how-it-works/#token-equivalents).
+
+| Detector | Key | What it finds | Counted in grade |
+| --- | --- | --- | --- |
+| [Idle cache rebuild](/agentwaste/detectors/idle-cache-rebuild/) | `idle_cache_rebuild` | The cache expired during a break and the context was re-written | Yes |
+| [Uncached context](/agentwaste/detectors/uncached-context/) | `uncached_context` | Claude conversations re-sent without prompt caching | Yes |
+| [Uncached context, self-hosted](/agentwaste/detectors/uncached-context/#self-hosted-models) | `uncached_context_self_hosted` | The same on non-Claude models | No (informational) |
+| [Re-read](/agentwaste/detectors/reread/) | `reread` | A file read again with no change in between | Yes |
+| [Duplicate call](/agentwaste/detectors/duplicate-call/) | `duplicate_call` | An identical search or fetch repeated | Yes |
+| [Huge result](/agentwaste/detectors/huge-result/) | `huge_result` | A tool output over 10k tokens, carried in every later message | Yes |
+| [Error thrash](/agentwaste/detectors/error-thrash/) | `error_thrash` | The same tool failing 3+ times in a row | Yes |
+
+The key is how each detector appears in the [JSON output](/agentwaste/reference/json-output/).
