@@ -1,0 +1,53 @@
+---
+title: "Introduction"
+description: "Find where your AI coding agent wastes tokens, and how to stop it."
+---
+
+**agentwaste** reads the session logs your AI coding agent already keeps on your
+computer, finds the patterns that burn tokens for nothing, and tells you what to
+change. Usage trackers tell you *how much* you used. agentwaste tells you *why*,
+and how much of it was avoidable.
+
+```bash
+uvx agentwaste
+```
+
+<CardGroup cols={2}>
+  <Card title="Quickstart" icon="rocket" href="/quickstart">
+    Run your first report in under a minute.
+  </Card>
+  <Card title="How it works" icon="gears" href="/how-it-works">
+    The cost model behind every number.
+  </Card>
+  <Card title="Detectors" icon="magnifying-glass" href="/detectors/overview">
+    The six waste patterns, defined exactly.
+  </Card>
+  <Card title="Privacy" icon="lock" href="/privacy">
+    Everything stays on your machine.
+  </Card>
+</CardGroup>
+
+## Why it exists
+
+AI coding agents spend far more than people expect, often for avoidable reasons:
+
+- You step away for a few minutes, the prompt cache expires, and the next message
+  re-sends the whole conversation at a higher price.
+- The agent reads the same unchanged file again and again.
+- One command dumps tens of thousands of tokens of output, which the agent then
+  carries in every later message.
+- A failing command is retried over and over.
+
+If you pay per token, that's money. If you're on a subscription, it's the reason
+you hit your usage limit early.
+
+## What you get
+
+- **A report** of where tokens went, how much was waste, and a grade from A to F.
+- **A fix for each pattern**, with the worst examples (files, tools, models).
+- **A shareable card** with aggregates only, safe to post.
+- **JSON output** for scripts and dashboards.
+
+<Note>
+  agentwaste currently reads **Claude Code** logs. Codex support is next.
+</Note>

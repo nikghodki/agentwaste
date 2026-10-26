@@ -1,0 +1,30 @@
+---
+title: "Re-read"
+description: "Reading a file again when nothing changed."
+---
+
+**Key:** `reread`
+
+## What it is
+
+The agent reads a file it already read earlier in the session, although the file
+hasn't changed. Each re-read adds the same content to the context again.
+
+## How it's detected
+
+A `Read` call is flagged when the same file was already read in the stream, with no
+`Edit`, `Write`, `MultiEdit` or `NotebookEdit` of that file and no `Bash` call in
+between. Any `Bash` call resets tracking, because a shell command may have changed
+the file.
+
+Reading a different range of the same file still counts.
+
+**Waste** = result tokens x 1.25, the cost of writing that content into the cache
+again.
+
+## How to fix it
+
+- Put facts the agent keeps looking up (config values, key paths, conventions) in
+  `CLAUDE.md`.
+- Ask the agent to note what it learned from a file rather than re-open it.
+- The report lists the most re-read files; those are the best candidates.

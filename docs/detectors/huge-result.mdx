@@ -1,0 +1,27 @@
+---
+title: "Huge result"
+description: "One big output, paid for on every later message."
+---
+
+**Key:** `huge_result`
+
+## What it is
+
+A tool returns a very large output: a recursive grep, a whole log file, a big JSON
+response. It's written into the cache once, then read again on every later message
+in the session. A single oversized result can cost more than the rest of the session
+combined.
+
+## How it's detected
+
+A tool result is flagged when it's larger than **10,000** tokens. The first
+**2,000** tokens are treated as reasonable; only the excess counts.
+
+**Waste** = (tokens - 2,000) x (1.25 + 0.1 x number of later calls in the stream).
+
+## How to fix it
+
+- Pipe command output through `head`, `tail` or `grep`.
+- Add limits and filters to API and database queries.
+- Read large files in ranges.
+- Use a code-search tool instead of recursive `grep -r`.

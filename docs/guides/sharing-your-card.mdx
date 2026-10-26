@@ -1,0 +1,26 @@
+---
+title: "Sharing your card"
+description: "A shareable summary that contains nothing private."
+---
+
+```bash
+uvx agentwaste --card my-card.html
+```
+
+This writes a single, self-contained HTML file with:
+
+- your grade and waste percentage,
+- total token-equivalents and number of sessions,
+- your top three waste categories,
+- the time span covered.
+
+Open it in a browser and take a screenshot, or share the file.
+
+<Note>
+  The card contains **aggregates only**: no file paths, project names, commands or
+  session content. A test in the agentwaste test suite checks this on every change.
+</Note>
+
+The terminal report is different: it's for you, and it can show the names of your
+most re-read files or the models involved. Don't paste the full report publicly
+without checking it.

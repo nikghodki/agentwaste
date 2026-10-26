@@ -1,0 +1,67 @@
+---
+title: "How it works"
+description: "Where the data comes from and how waste is priced."
+---
+
+## Where the data comes from
+
+Claude Code writes a transcript of every session to
+`~/.claude/projects/<project>/<session>.jsonl`. Each model call records its token
+usage, split into fresh input, cache writes, cache reads and output, and each tool
+call records its input and result. agentwaste reads these files and nothing else.
+
+Two details matter for accuracy:
+
+- One reply is often written as several records sharing a message ID. agentwaste
+  counts its usage once.
+- Subagents run in *sidechains* with their own prompt cache. agentwaste treats each
+  session's main thread and each sidechain as a separate **stream**, so timing and
+  repeats are judged within one cache context.
+
+## Token-equivalents
+
+Anthropic's prompt caching bills input at different rates, so raw token counts
+mislead. agentwaste converts everything into **priced input token-equivalents
+(eq)**, where one eq is one fresh input token:
+
+| Kind of input | Weight |
+| --- | --- |
+| Fresh input | 1.0 |
+| Cache write, 5-minute cache | 1.25 |
+| Cache write, 1-hour cache | 2.0 |
+| Cache read | 0.1 |
+
+A cache read is ten times cheaper than fresh input, and a cache write is 25% more
+expensive. So the biggest wins usually come from avoiding cache rewrites.
+
+Output tokens are reported separately and aren't part of any waste estimate.
+
+<Note>
+  Dollar figures are opt-in with `--usd-per-mtok`, because prices and plans change.
+  Token-equivalents stay meaningful when they do.
+</Note>
+
+## Waste and the grade
+
+Each [detector](/detectors/overview) estimates the eq it considers avoidable. The
+total waste is the sum, capped at what was actually spent, because two detectors can
+flag the same tokens (for example, a huge result that is also a re-read).
+
+| Waste share of priced input | Grade |
+| --- | --- |
+| under 10% | A |
+| 10% to 20% | B |
+| 20% to 30% | C |
+| 30% to 45% | D |
+| 45% or more | F |
+
+Informational findings, currently only for self-hosted models, are shown but excluded
+from the total and the grade. See [Uncached context](/detectors/uncached-context).
+
+## Limits
+
+- Tool result sizes are estimated as characters / 4.
+- The estimates describe what the patterns cost, not a guaranteed saving. Keeping a
+  cache warm, for example, has a small cost of its own.
+- The waste percentage uses all priced input as its base, including calls to
+  self-hosted models, which can make the percentage look lower if you mix them.

@@ -1,0 +1,30 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "agentwaste",
+  "description": "Find where your AI coding agent wastes tokens, and how to stop it.",
+  "colors": { "primary": "#FF7A59", "light": "#FF9E85", "dark": "#E0603F" },
+  "navigation": {
+    "groups": [
+      { "group": "Get started", "pages": ["index", "quickstart", "how-it-works"] },
+      {
+        "group": "Detectors",
+        "pages": [
+          "detectors/overview",
+          "detectors/idle-cache-rebuild",
+          "detectors/uncached-context",
+          "detectors/reread",
+          "detectors/duplicate-call",
+          "detectors/huge-result",
+          "detectors/error-thrash"
+        ]
+      },
+      { "group": "Guides", "pages": ["guides/sharing-your-card", "guides/reducing-waste"] },
+      { "group": "Reference", "pages": ["reference/cli", "reference/json-output", "privacy", "faq"] }
+    ]
+  },
+  "navbar": {
+    "primary": { "type": "github", "href": "https://github.com/nikghodki/agentwaste" }
+  },
+  "footer": { "socials": { "github": "https://github.com/nikghodki/agentwaste" } }
+}

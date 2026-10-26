@@ -1,0 +1,40 @@
+---
+title: "Idle cache rebuild"
+description: "Paying to re-cache the whole conversation after a break."
+---
+
+**Key:** `idle_cache_rebuild`
+
+## What it is
+
+Claude's prompt cache keeps your conversation for **5 minutes** after its last use
+(or 1 hour with the extended cache). Come back later and the next message has to
+write the whole context into the cache again, at 1.25x the input price, instead of
+reading it at 0.1x.
+
+On long sessions with large contexts, this is often the biggest single source of
+waste. On the author's own logs it was about a third of all priced input.
+
+## How it's detected
+
+A model call is flagged when:
+
+1. it writes at least **20,000** tokens to the cache, and
+2. the previous call in the same stream was more than **300 seconds** earlier, or
+   more than **3,600 seconds** if the call used the 1-hour cache.
+
+**Waste** = tokens written x (write weight - read weight): the extra cost over
+reading the same context from a warm cache.
+
+## How to fix it
+
+- Run `/compact` before a break, so the context you come back to is small.
+- Use `/clear` when you switch tasks, instead of continuing a huge session.
+- For long sessions with breaks, use the 1-hour cache: writes cost more (2x) but
+  survive the break.
+- Finish a thought before stepping away rather than leaving the agent mid-task.
+
+<Note>
+  Some rebuilds can't be avoided, such as the first message after compaction or a
+  model switch. Treat the number as an upper bound.
+</Note>
