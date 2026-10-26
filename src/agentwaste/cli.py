@@ -10,6 +10,7 @@ from pathlib import Path
 from . import __version__
 from .analysis import analyze
 from .card import render_card
+from .demo import demo_streams
 from .report import render_text, to_json
 from .sources import claude_code
 
@@ -25,6 +26,7 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--usd-per-mtok", type=float, metavar="USD",
                    help="show dollar estimates at this price per million input tokens")
     p.add_argument("--top", type=int, default=3, help="examples to show per finding (default: 3)")
+    p.add_argument("--demo", action="store_true", help="run on built-in synthetic sessions instead of your logs")
     p.add_argument("--version", action="version", version=f"agentwaste {__version__}")
     return p
 
@@ -33,12 +35,14 @@ def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     root = Path(args.path).expanduser()
     since = time.time() - args.days * 86400 if args.days else None
-    report = analyze(root, since=since)
+    report = analyze(demo_streams()) if args.demo else analyze(root, since=since)
     if not report.model_calls:
         print(f"No Claude Code sessions found in {root}"
               + (f" in the last {args.days:g} days" if args.days else "")
               + ". Try --days 0 or --path.", file=sys.stderr)
         return 1
+    if args.demo and not args.json:
+        print("Showing demo data (synthetic sessions). Run without --demo to analyze your own logs.\n")
     print(to_json(report, args.usd_per_mtok) if args.json else render_text(report, args.usd_per_mtok, args.top))
     if args.card:
         Path(args.card).write_text(render_card(report))
